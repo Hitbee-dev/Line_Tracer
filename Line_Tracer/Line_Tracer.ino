@@ -7,6 +7,13 @@
 #define M_IN3 13 // 모터드라이버 IN1 핀, 아두이노 우노 보드 디지털 13번 핀에 연결
 #define M_IN4 12 // 모터드라이버 IN2 핀, 아두이노 우노 보드 디지털 12번 핀에 연결
 
+#define L_E 14 // 왼쪽 초음파센서 Echo
+#define L_T 15 // 왼쪽 초음파센서 Trig
+#define C_E 16  // 가운데 초음파센서 Echo
+#define C_T 17  // 가운데 초음파센서 Trig
+#define R_E 18 // 오른쪽 초음파센서 Echo
+#define R_T 19 // 오르쪽 초음파센서 Trig
+
 int motorA_vector = 1;  // DC모터의 회전방향이 반대일 시 1을 0으로
 // "1"을 "0"으로 바꿔주면 DC모터의 회전방향이 바뀜.
 void setup()  // 초기화
@@ -17,14 +24,21 @@ void setup()  // 초기화
   pinMode(M_IN2, OUTPUT);  // IN2와 연결된 핀 출력 설정
   pinMode(M_ENB, OUTPUT);  // ENB와 연결된 핀 출력 설정
   pinMode(M_IN3, OUTPUT);  // IN3과 연결된 핀 출력 설정
-  pinMode(M_IN4, OUTPUT);  // IN4와 연결된 핀 출력 설정 
+  pinMode(M_IN4, OUTPUT);  // IN4와 연결된 핀 출력 설정
+  pinMode(L_T, OUTPUT);
+  pinMode(L_E, INPUT);
+  pinMode(C_T, OUTPUT);
+  pinMode(C_E, INPUT);
+  pinMode(R_T, OUTPUT);
+  pinMode(R_E, INPUT);
 }
 void loop()  // 무한루프
 {
-  motor_back();
-  motor_stop();
-  motor_start();
-  motor_stop();
+  ultra();
+//  motor_back();
+//  motor_stop();
+//  motor_start();
+//  motor_stop();
 }
 
 void motor_start(){
@@ -61,4 +75,39 @@ void motor_stop(){
   digitalWrite(M_IN3, LOW);  // IN1에 LOW
   digitalWrite(M_IN4, LOW);  // IN2에 LOW
   delay(1000);  // 1초간 지연
+  }
+
+void ultra(){
+  long lduration, ldistance, cduration, cdistance, rduration, rdistance;
+  digitalWrite(L_T, LOW);
+  delayMicroseconds(2);
+  digitalWrite(L_T, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(L_T, LOW);
+  digitalWrite(C_T, LOW);
+  delayMicroseconds(2);
+  digitalWrite(C_T, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(C_T, LOW);
+  digitalWrite(R_T, LOW);
+  delayMicroseconds(2);
+  digitalWrite(R_T, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(R_T, LOW);
+
+  lduration = pulseIn(L_E, HIGH);
+  ldistance = lduration * 17 / 1000;
+  Serial.print("Left Ultra: ");
+  Serial.println(ldistance);
+  
+  cduration = pulseIn(C_E, HIGH);
+  cdistance = cduration * 17 / 1000;
+  Serial.print("Center Ultra: ");
+  Serial.println(cdistance);
+  
+  rduration = pulseIn(R_E, HIGH);
+  rdistance = rduration * 17 / 1000;
+  Serial.print("Right Ultra: ");
+  Serial.println(rdistance);
+  delay(10);
   }
